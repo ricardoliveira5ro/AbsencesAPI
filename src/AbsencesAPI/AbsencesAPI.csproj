@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AbsencesAPI.Business\AbsencesAPI.Business.csproj" />
     <ProjectReference Include="..\AbsencesAPI.Infrastructure\AbsencesAPI.Infrastructure.csproj" />
   </ItemGroup>
 
