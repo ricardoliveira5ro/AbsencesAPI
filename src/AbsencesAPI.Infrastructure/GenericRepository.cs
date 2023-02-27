@@ -41,7 +41,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
         if (take != null)
             query = query.Take(take.Value);
 
-        return query.ToListAsync();
+        return await query.ToListAsync();
     }
 
     public async Task<T?> GetById(int id, params Expression<Func<T, object>>[] includes)

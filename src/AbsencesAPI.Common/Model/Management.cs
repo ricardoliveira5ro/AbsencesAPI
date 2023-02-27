@@ -9,6 +9,6 @@ namespace AbsencesAPI.Common.Model;
 public class Management : BaseEntity
 {
     public string Manager { get; set; } = default!;
-    public int ManagerNumber { get; set; } = default!;
+    public int? ManagerNumber { get; set; }
     public List<Employee> Employees { get; set; } = default!;
 }
