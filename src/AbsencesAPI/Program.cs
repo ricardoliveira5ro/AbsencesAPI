@@ -8,9 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 DIConfiguration.RegisterServices(builder.Services);
 builder.Services.AddScoped<IGenericRepository<Management>, GenericRepository<Management>>();
+builder.Services.AddScoped<IGenericRepository<Stats>, GenericRepository<Stats>>();
 builder.Services.AddScoped<IGenericRepository<Employee>, GenericRepository<Employee>>();
 builder.Services.AddScoped<IGenericRepository<Absence>, GenericRepository<Absence>>();
-builder.Services.AddScoped<IGenericRepository<Stats>, GenericRepository<Stats>>();
 builder.Services.AddDbContext<ApplicationDbContext>();
 
 builder.Services.AddControllers();
