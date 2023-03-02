@@ -1,4 +1,4 @@
-﻿using AbsencesAPI.Common.DTOS;
+﻿using AbsencesAPI.Common.DTOS.Management;
 using AbsencesAPI.Common.DTOS.Stats;
 using AbsencesAPI.Common.Model;
 using AutoMapper;
