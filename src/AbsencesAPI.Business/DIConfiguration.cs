@@ -11,5 +11,6 @@ public class DIConfiguration
         services.AddAutoMapper(typeof(DtoEntityMapperProfile));
         services.AddScoped<IManangementService, ManagementService>();
         services.AddScoped<IStatsService, StatsService>();
+        services.AddScoped<IEmployeeService, EmployeeService>();
     }
 }

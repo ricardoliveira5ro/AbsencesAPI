@@ -1,4 +1,5 @@
-﻿using AbsencesAPI.Common.DTOS.Management;
+﻿using AbsencesAPI.Common.DTOS.Employee;
+using AbsencesAPI.Common.DTOS.Management;
 using AbsencesAPI.Common.DTOS.Stats;
 using AbsencesAPI.Common.Model;
 using AutoMapper;
@@ -18,5 +19,18 @@ public class DtoEntityMapperProfile : Profile
             .ForMember(dest => dest.Id, opt => opt.Ignore());
         CreateMap<StatsUpdate, Stats>();
         CreateMap<Stats, StatsGet>();
+
+        CreateMap<EmployeeCreate, Employee>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore())
+            .ForMember(dest => dest.Absences, opt => opt.Ignore())
+            .ForMember(dest => dest.Manager, opt => opt.Ignore());
+        CreateMap<EmployeeUpdate, Employee>()
+            .ForMember(dest => dest.Absences, opt => opt.Ignore())
+            .ForMember(dest => dest.Manager, opt => opt.Ignore());
+        CreateMap<Employee, EmployeeDetails>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore())
+            //.ForMember(dest => dest.Absences, opt => opt.Ignore())
+            .ForMember(dest => dest.Manager, opt => opt.Ignore());
+        CreateMap<Employee, EmployeeList>();
     }
 }
