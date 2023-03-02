@@ -1,3 +1,3 @@
 ﻿namespace AbsencesAPI.Common.DTOS.Management;
 
-public record StatsGet(int Id, string Manager, int? ManagerNumber);
+public record ManagementGet(int Id, string Manager, int? ManagerNumber);

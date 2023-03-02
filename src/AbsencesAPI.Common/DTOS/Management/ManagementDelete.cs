@@ -1,3 +1,3 @@
 ﻿namespace AbsencesAPI.Common.DTOS.Management;
 
-public record StatsDelete(int Id);
+public record ManagementDelete(int Id);
