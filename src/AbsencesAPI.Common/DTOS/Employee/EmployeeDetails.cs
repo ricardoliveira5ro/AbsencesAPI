@@ -3,4 +3,4 @@ using AbsencesAPI.Common.DTOS.Management;
 
 namespace AbsencesAPI.Common.DTOS.Employee;
 
-public record EmployeeDetails(int id, string Name, int? EmployeeNumber, string Department, List<AbsenceGet> Absences, ManagementGet Management);
+public record EmployeeDetails(int Id, string Name, int? EmployeeNumber, string Department, /*List<AbsenceGet> Absences,*/ ManagementGet Manager);
