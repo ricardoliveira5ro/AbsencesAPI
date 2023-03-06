@@ -59,7 +59,7 @@ public class EmployeeService : IEmployeeService
                                                                             employee.EmployeeNumber.Equals(employeeFilter.EmployeeNumber);
 
         Expression<Func<Employee, bool>> managerFilter = (employee) => employeeFilter.Manager == null ? true :
-                                                                            employee.Manager.Equals(employeeFilter.Manager);
+                                                                            employee.Manager.Manager.Equals(employeeFilter.Manager);
 
         Expression<Func<Employee, bool>> absencesFilter = (employee) => employeeFilter.Absence == null ? true :
                                     employee.Absences.Any(absence => absence.Date.ToShortDateString().Equals(employeeFilter.Absence));
