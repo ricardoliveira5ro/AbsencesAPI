@@ -2,4 +2,4 @@
 
 namespace AbsencesAPI.Common.DTOS.Absence;
 
-public record AbsenceGet(int Id, DateTime Date, string Type, List<EmployeeList> Employees, string StatsId);
+public record AbsenceGet(int Id, DateTime Date, string Type, List<EmployeeList> Employees);

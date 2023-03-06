@@ -41,6 +41,8 @@ public class DtoEntityMapperProfile : Profile
         CreateMap<AbsenceUpdate, Absence>()
             .ForMember(dest => dest.Employees, opt => opt.Ignore())
             .ForMember(dest => dest.Statistic, opt => opt.Ignore());
-        CreateMap<Absence, AbsenceGet>();
+        CreateMap<Absence, AbsenceGet>()
+            .ForMember(dest => dest.Employees, opt => opt.Ignore());
+
     }
 }
