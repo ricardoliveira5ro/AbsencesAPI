@@ -12,5 +12,6 @@ public class DIConfiguration
         services.AddScoped<IManangementService, ManagementService>();
         services.AddScoped<IStatsService, StatsService>();
         services.AddScoped<IEmployeeService, EmployeeService>();
+        services.AddScoped<IAbsenceService, AbsenceService>();
     }
 }
