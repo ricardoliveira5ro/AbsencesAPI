@@ -49,7 +49,7 @@ public class EmployeeController : Controller
 
     [HttpGet]
     [Route("Get")]
-    public async Task<IActionResult> GetEmployees(EmployeeFilter employeeFilter)
+    public async Task<IActionResult> GetEmployees([FromQuery] EmployeeFilter employeeFilter)
     {
         var employees = await EmployeeService.GetEmployeesAsync(employeeFilter);
         return Ok(employees);
