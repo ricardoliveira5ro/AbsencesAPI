@@ -1,4 +1,5 @@
 ﻿using AbsencesAPI.Common.DTOS.Absence;
+using AbsencesAPI.Common.DTOS.Employee;
 using AbsencesAPI.Common.Interfaces;
 using AbsencesAPI.Common.Model;
 using AutoMapper;
@@ -10,14 +11,17 @@ public class AbsenceService : IAbsenceService
 {
     private IGenericRepository<Absence> AbsenceRepository { get; }
     private IGenericRepository<Employee> EmployeeRepository { get; }
+    private IGenericRepository<Stats> StatsRepository { get; }
     private IMapper Mapper { get; }
 
     public AbsenceService(IGenericRepository<Absence> absenceRepository,
                             IGenericRepository<Employee> employeeRepository,
+                            IGenericRepository<Stats> statsRepository,
                             IMapper mapper)
     {
         AbsenceRepository = absenceRepository;
         EmployeeRepository = employeeRepository;
+        StatsRepository = statsRepository;
         Mapper = mapper;
     }
 
@@ -27,8 +31,11 @@ public class AbsenceService : IAbsenceService
         Expression<Func<Employee, bool>> employeeFilter = (employee) => absenceCreate.Employees.Contains(employee.Id);
         var employees = await EmployeeRepository.GetFilteredAsync(new[] {employeeFilter}, null, null);
 
+        var statistic = await StatsRepository.GetByIdAsync(absenceCreate.StatsId);
+
         var entity = Mapper.Map<Absence>(absenceCreate);
         entity.Employees = employees;
+        entity.Statistic = statistic;
 
         await AbsenceRepository.InsertAsync(entity);
         await AbsenceRepository.SaveChangesAsync();
