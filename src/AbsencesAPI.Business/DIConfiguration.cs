@@ -1,4 +1,8 @@
 ﻿using AbsencesAPI.Business.Services;
+using AbsencesAPI.Business.Validation.Absence;
+using AbsencesAPI.Business.Validation.Employee;
+using AbsencesAPI.Business.Validation.Management;
+using AbsencesAPI.Business.Validation.Stats;
 using AbsencesAPI.Common.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,5 +17,14 @@ public class DIConfiguration
         services.AddScoped<IStatsService, StatsService>();
         services.AddScoped<IEmployeeService, EmployeeService>();
         services.AddScoped<IAbsenceService, AbsenceService>();
+
+        services.AddScoped<ManagementCreateValidator>();
+        services.AddScoped<ManagementUpdateValidator>();
+        services.AddScoped<StatsCreateValidator>();
+        services.AddScoped<StatsUpdateValidator>();
+        services.AddScoped<EmployeeCreateValidator>();
+        services.AddScoped<EmployeeUpdateValidator>();
+        services.AddScoped<AbsenceCreateValidator>();
+        services.AddScoped<AbsenceUpdateValidator>();
     }
 }

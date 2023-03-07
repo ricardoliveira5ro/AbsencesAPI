@@ -1,3 +1,4 @@
+using AbsencesAPI;
 using AbsencesAPI.Business;
 using AbsencesAPI.Common.Interfaces;
 using AbsencesAPI.Common.Model;
@@ -32,6 +33,8 @@ using(var scope = app.Services.CreateScope())
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     dbContext.Database.EnsureCreated();
 }
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 
