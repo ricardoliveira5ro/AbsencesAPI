@@ -1,7 +1,10 @@
-﻿using AbsencesAPI.Common.DTOS.Management;
+﻿using AbsencesAPI.Business.Validation.Management;
+using AbsencesAPI.Common.DTOS.Management;
+using AbsencesAPI.Common.DTOS.Stats;
 using AbsencesAPI.Common.Interfaces;
 using AbsencesAPI.Common.Model;
 using AutoMapper;
+using FluentValidation;
 
 namespace AbsencesAPI.Business.Services;
 
@@ -9,15 +12,24 @@ public class ManagementService : IManangementService
 {
     private IMapper Mapper { get; }
     private IGenericRepository<Management> ManagementRepository { get; }
+    private ManagementCreateValidator CreateValidator { get; }
+    private ManagementUpdateValidator UpdateValidator { get; }
 
-    public ManagementService(IMapper mapper, IGenericRepository<Management> managementRepository)
+    public ManagementService(IMapper mapper,
+                            IGenericRepository<Management> managementRepository,
+                            ManagementCreateValidator createValidator,
+                            ManagementUpdateValidator updateValidator)
     {
         Mapper = mapper;
         ManagementRepository = managementRepository;
+        CreateValidator = createValidator;
+        UpdateValidator = updateValidator;
     }
 
     public async Task<int> CreateManagementAsync(ManagementCreate managementCreate)
     {
+        await CreateValidator.ValidateAndThrowAsync(managementCreate);
+
         var entity = Mapper.Map<Management>(managementCreate);
         await ManagementRepository.InsertAsync(entity);
         await ManagementRepository.SaveChangesAsync();
@@ -45,6 +57,8 @@ public class ManagementService : IManangementService
 
     public async Task UpdateManagementAsync(ManagementUpdate managementUpdate)
     {
+        await UpdateValidator.ValidateAndThrowAsync(managementUpdate);
+
         var entity = Mapper.Map<Management>(managementUpdate);
         ManagementRepository.Update(entity);
         await ManagementRepository.SaveChangesAsync();

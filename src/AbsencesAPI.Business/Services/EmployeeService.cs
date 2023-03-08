@@ -1,7 +1,10 @@
-﻿using AbsencesAPI.Common.DTOS.Employee;
+﻿using AbsencesAPI.Business.Validation.Employee;
+using AbsencesAPI.Common.DTOS.Employee;
+using AbsencesAPI.Common.DTOS.Stats;
 using AbsencesAPI.Common.Interfaces;
 using AbsencesAPI.Common.Model;
 using AutoMapper;
+using FluentValidation;
 using System.Linq.Expressions;
 
 namespace AbsencesAPI.Business.Services;
@@ -10,18 +13,26 @@ public class EmployeeService : IEmployeeService
     private IGenericRepository<Employee> EmployeeRepository { get; }
     private IGenericRepository<Management> ManagementRepository { get; }
     private IMapper Mapper { get; }
+    private EmployeeCreateValidator CreateValidator { get; }
+    private EmployeeUpdateValidator UpdateValidator { get; }
 
     public EmployeeService(IGenericRepository<Employee> employeeRepository,
                             IGenericRepository<Management> managementRepository,
-                            IMapper mapper)
+                            IMapper mapper,
+                            EmployeeCreateValidator createValidator,
+                            EmployeeUpdateValidator updateValidator)
     {
         EmployeeRepository = employeeRepository;
         ManagementRepository = managementRepository;
         Mapper = mapper;
+        CreateValidator = createValidator;
+        UpdateValidator = updateValidator;
     }
 
     public async Task<int> CreateEmployeeAsync(EmployeeCreate employeeCreate)
     {
+        await CreateValidator.ValidateAndThrowAsync(employeeCreate);
+
         var manager = await ManagementRepository.GetByIdAsync(employeeCreate.ManagerId);
 
         var entity = Mapper.Map<Employee>(employeeCreate);
@@ -74,6 +85,8 @@ public class EmployeeService : IEmployeeService
 
     public async Task UpdateEmployeeAsync(EmployeeUpdate employeeUpdate)
     {
+        await UpdateValidator.ValidateAndThrowAsync(employeeUpdate);
+
         var manager = await ManagementRepository.GetByIdAsync(employeeUpdate.ManagerId);
 
         var entity = Mapper.Map<Employee>(employeeUpdate);
