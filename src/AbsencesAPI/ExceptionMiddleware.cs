@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
 namespace AbsencesAPI;
@@ -17,6 +18,23 @@ public class ExceptionMiddleware
         try
         {
             await Next(context);
+        }
+        catch(ValidationException ex)
+        {
+            context.Response.ContentType = "application/problem+json";
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+            var problemDetails = new ProblemDetails()
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Detail = JsonSerializer.Serialize(ex.Errors),
+                Instance = "",
+                Title = "Validation Error",
+                Type = "Error"
+            };
+
+            var problemDetailsJson = JsonSerializer.Serialize(problemDetails);
+            await context.Response.WriteAsync(problemDetailsJson);
         }
         catch (Exception ex)
         {

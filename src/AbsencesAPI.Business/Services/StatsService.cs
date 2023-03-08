@@ -1,7 +1,9 @@
-﻿using AbsencesAPI.Common.DTOS.Stats;
+﻿using AbsencesAPI.Business.Validation.Stats;
+using AbsencesAPI.Common.DTOS.Stats;
 using AbsencesAPI.Common.Interfaces;
 using AbsencesAPI.Common.Model;
 using AutoMapper;
+using FluentValidation;
 
 namespace AbsencesAPI.Business.Services;
 
@@ -9,15 +11,24 @@ public class StatsService : IStatsService
 {
     private IMapper Mapper { get; }
     private IGenericRepository<Stats> StatsRepository { get; }
+    private StatsCreateValidator CreateValidator { get; }
+    private StatsUpdateValidator UpdateValidator { get; }
 
-    public StatsService(IMapper mapper, IGenericRepository<Stats> statsRepository)
+    public StatsService(IMapper mapper,
+                        IGenericRepository<Stats> statsRepository,
+                        StatsCreateValidator createValidator,
+                        StatsUpdateValidator updateValidator)
     {
         Mapper = mapper;
         StatsRepository = statsRepository;
+        CreateValidator = createValidator;
+        UpdateValidator = updateValidator;
     }
 
     public async Task<int> CreateStatAsync(StatsCreate statsCreate)
     {
+        await CreateValidator.ValidateAndThrowAsync(statsCreate);
+
         var entity = Mapper.Map<Stats>(statsCreate);
         await StatsRepository.InsertAsync(entity);
         await StatsRepository.SaveChangesAsync();
@@ -45,6 +56,8 @@ public class StatsService : IStatsService
 
     public async Task UpdateStatAsync(StatsUpdate statsUpdate)
     {
+        await UpdateValidator.ValidateAndThrowAsync(statsUpdate);
+
         var entity = Mapper.Map<Stats>(statsUpdate);
         StatsRepository.Update(entity);
         await StatsRepository.SaveChangesAsync();

@@ -1,8 +1,11 @@
-﻿using AbsencesAPI.Common.DTOS.Absence;
+﻿using AbsencesAPI.Business.Validation.Absence;
+using AbsencesAPI.Common.DTOS.Absence;
 using AbsencesAPI.Common.DTOS.Employee;
+using AbsencesAPI.Common.DTOS.Stats;
 using AbsencesAPI.Common.Interfaces;
 using AbsencesAPI.Common.Model;
 using AutoMapper;
+using FluentValidation;
 using System.Linq.Expressions;
 
 namespace AbsencesAPI.Business.Services;
@@ -13,21 +16,29 @@ public class AbsenceService : IAbsenceService
     private IGenericRepository<Employee> EmployeeRepository { get; }
     private IGenericRepository<Stats> StatsRepository { get; }
     private IMapper Mapper { get; }
+    private AbsenceCreateValidator CreateValidator { get; }
+    private AbsenceUpdateValidator UpdateValidator { get; }
 
     public AbsenceService(IGenericRepository<Absence> absenceRepository,
                             IGenericRepository<Employee> employeeRepository,
                             IGenericRepository<Stats> statsRepository,
-                            IMapper mapper)
+                            IMapper mapper,
+                            AbsenceCreateValidator createValidator,
+                            AbsenceUpdateValidator updateValidator)
     {
         AbsenceRepository = absenceRepository;
         EmployeeRepository = employeeRepository;
         StatsRepository = statsRepository;
         Mapper = mapper;
+        CreateValidator = createValidator;
+        UpdateValidator = updateValidator;
     }
 
 
     public async Task<int> CreateAbsenceAsync(AbsenceCreate absenceCreate)
     {
+        await CreateValidator.ValidateAndThrowAsync(absenceCreate);
+
         Expression<Func<Employee, bool>> employeeFilter = (employee) => absenceCreate.Employees.Contains(employee.Id);
         var employees = await EmployeeRepository.GetFilteredAsync(new[] {employeeFilter}, null, null);
 
@@ -66,6 +77,8 @@ public class AbsenceService : IAbsenceService
 
     public async Task UpdateAbsenceAsync(AbsenceUpdate absenceUpdate)
     {
+        await UpdateValidator.ValidateAndThrowAsync(absenceUpdate);
+
         Expression<Func<Employee, bool>> employeeFilter = (employee) => absenceUpdate.Employees.Contains(employee.Id);
         var employees = await EmployeeRepository.GetFilteredAsync(new[] { employeeFilter }, null, null);
         
