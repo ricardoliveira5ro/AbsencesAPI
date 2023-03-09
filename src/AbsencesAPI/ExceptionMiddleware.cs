@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using AbsencesAPI.Business.Exceptions;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
@@ -19,7 +20,41 @@ public class ExceptionMiddleware
         {
             await Next(context);
         }
-        catch(ValidationException ex)
+        catch(StatNotFoundException ex)
+        {
+            context.Response.ContentType = "application/problem+json";
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+            var problemDetails = new ProblemDetails()
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Detail = string.Empty,
+                Instance = "",
+                Title = $"Statistic for id {ex.Id} not found",
+                Type = "Error"
+            };
+
+            var problemDetailsJson = JsonSerializer.Serialize(problemDetails);
+            await context.Response.WriteAsync(problemDetailsJson);
+        }
+        catch (DependentAbsencesExistException ex)
+        {
+            context.Response.ContentType = "application/problem+json";
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+            var problemDetails = new ProblemDetails()
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Detail = string.Empty,
+                Instance = "",
+                Title = $"Dependent Absences {JsonSerializer.Serialize(ex.Absences.Select(a => a.Id))} exist",
+                Type = "Error"
+            };
+
+            var problemDetailsJson = JsonSerializer.Serialize(problemDetails);
+            await context.Response.WriteAsync(problemDetailsJson);
+        }
+        catch (ValidationException ex)
         {
             context.Response.ContentType = "application/problem+json";
             context.Response.StatusCode = StatusCodes.Status400BadRequest;

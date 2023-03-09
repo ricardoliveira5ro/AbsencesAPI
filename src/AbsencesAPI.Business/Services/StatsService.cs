@@ -1,4 +1,5 @@
-﻿using AbsencesAPI.Business.Validation.Stats;
+﻿using AbsencesAPI.Business.Exceptions;
+using AbsencesAPI.Business.Validation.Stats;
 using AbsencesAPI.Common.DTOS.Stats;
 using AbsencesAPI.Common.Interfaces;
 using AbsencesAPI.Common.Model;
@@ -37,7 +38,14 @@ public class StatsService : IStatsService
 
     public async Task DeleteStatAsync(StatsDelete statsDelete)
     {
-        var entity = await StatsRepository.GetByIdAsync(statsDelete.Id);
+        var entity = await StatsRepository.GetByIdAsync(statsDelete.Id, (stat) => stat.Absences);
+
+        if (entity == null)
+            throw new StatNotFoundException(entity.Id);
+
+        if (entity.Absences.Count > 0)
+            throw new DependentAbsencesExistException(entity.Absences);
+
         StatsRepository.Delete(entity);
         await StatsRepository.SaveChangesAsync();
     }
@@ -45,6 +53,10 @@ public class StatsService : IStatsService
     public async Task<StatsGet> GetStatByIdAsync(int id)
     {
         var entity = await StatsRepository.GetByIdAsync(id);
+
+        if (entity == null)
+            throw new StatNotFoundException(entity.Id);
+
         return Mapper.Map<StatsGet>(entity);
     }
 
@@ -57,6 +69,11 @@ public class StatsService : IStatsService
     public async Task UpdateStatAsync(StatsUpdate statsUpdate)
     {
         await UpdateValidator.ValidateAndThrowAsync(statsUpdate);
+
+        var existingEntity = await StatsRepository.GetByIdAsync(statsUpdate.Id);
+
+        if (existingEntity == null)
+            throw new StatNotFoundException(existingEntity.Id);
 
         var entity = Mapper.Map<Stats>(statsUpdate);
         StatsRepository.Update(entity);
