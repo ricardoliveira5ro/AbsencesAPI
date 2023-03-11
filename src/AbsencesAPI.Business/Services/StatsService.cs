@@ -41,7 +41,7 @@ public class StatsService : IStatsService
         var entity = await StatsRepository.GetByIdAsync(statsDelete.Id, (stat) => stat.Absences);
 
         if (entity == null)
-            throw new StatNotFoundException(entity.Id);
+            throw new NotFoundException(statsDelete.Id, "Statistic");
 
         if (entity.Absences.Count > 0)
             throw new DependentAbsencesExistException(entity.Absences);
@@ -55,7 +55,7 @@ public class StatsService : IStatsService
         var entity = await StatsRepository.GetByIdAsync(id);
 
         if (entity == null)
-            throw new StatNotFoundException(entity.Id);
+            throw new NotFoundException(id, "Statistic");
 
         return Mapper.Map<StatsGet>(entity);
     }
@@ -73,7 +73,7 @@ public class StatsService : IStatsService
         var existingEntity = await StatsRepository.GetByIdAsync(statsUpdate.Id);
 
         if (existingEntity == null)
-            throw new StatNotFoundException(existingEntity.Id);
+            throw new NotFoundException(statsUpdate.Id, "Statistic");
 
         var entity = Mapper.Map<Stats>(statsUpdate);
         StatsRepository.Update(entity);
