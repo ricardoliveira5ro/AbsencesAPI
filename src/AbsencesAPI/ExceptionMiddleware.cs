@@ -1,4 +1,5 @@
 ﻿using AbsencesAPI.Business.Exceptions;
+using AbsencesAPI.Common.Model;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
@@ -20,7 +21,7 @@ public class ExceptionMiddleware
         {
             await Next(context);
         }
-        catch(StatNotFoundException ex)
+        catch(NotFoundException ex)
         {
             context.Response.ContentType = "application/problem+json";
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
@@ -30,7 +31,7 @@ public class ExceptionMiddleware
                 Status = StatusCodes.Status400BadRequest,
                 Detail = string.Empty,
                 Instance = "",
-                Title = $"Statistic for id {ex.Id} not found",
+                Title = $"{ex.Type} for id {ex.Id} not found",
                 Type = "Error"
             };
 
