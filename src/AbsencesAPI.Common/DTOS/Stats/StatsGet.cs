@@ -1,3 +1,5 @@
-﻿namespace AbsencesAPI.Common.DTOS.Stats;
+﻿using AbsencesAPI.Common.DTOS.Absence;
 
-public record StatsGet(int Id, string Description, int? Value);
+namespace AbsencesAPI.Common.DTOS.Stats;
+
+public record StatsGet(int Id, string Description, int? Value, List<AbsenceGet> Absences);
