@@ -44,7 +44,7 @@ public class StatsService : IStatsService
             throw new NotFoundException(statsDelete.Id, "Statistic");
 
         if (entity.Absences.Count > 0)
-            throw new DependentAbsencesExistException(entity.Absences);
+            throw new DependentEntitiesException(entity.Absences.Select(a => a.Id).ToList(), "Absences");
 
         StatsRepository.Delete(entity);
         await StatsRepository.SaveChangesAsync();

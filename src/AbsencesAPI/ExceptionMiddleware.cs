@@ -38,17 +38,16 @@ public class ExceptionMiddleware
             var problemDetailsJson = JsonSerializer.Serialize(problemDetails);
             await context.Response.WriteAsync(problemDetailsJson);
         }
-        catch (DependentAbsencesExistException ex)
+        catch (DependentEntitiesException ex)
         {
             context.Response.ContentType = "application/problem+json";
             context.Response.StatusCode = StatusCodes.Status400BadRequest;
-
             var problemDetails = new ProblemDetails()
             {
                 Status = StatusCodes.Status400BadRequest,
                 Detail = string.Empty,
                 Instance = "",
-                Title = $"Dependent Absences {JsonSerializer.Serialize(ex.Absences.Select(a => a.Id))} exist",
+                Title = $"Dependent {ex.DependentEntityName} id's {JsonSerializer.Serialize(ex.DependentEntities)} exist",
                 Type = "Error"
             };
 
