@@ -62,7 +62,7 @@ public class StatsService : IStatsService
 
     public async Task<List<StatsGet>> GetStatsAsync()
     {
-        var entities = await StatsRepository.GetAsync(null, null);
+        var entities = await StatsRepository.GetAsync(null, null, (absence) => absence.Absences);
         return Mapper.Map<List<StatsGet>>(entities);
     }
 

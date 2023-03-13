@@ -19,7 +19,8 @@ public class DtoEntityMapperProfile : Profile
         CreateMap<StatsCreate, Stats>()
             .ForMember(dest => dest.Id, opt => opt.Ignore());
         CreateMap<StatsUpdate, Stats>();
-        CreateMap<Stats, StatsGet>();
+        CreateMap<Stats, StatsGet>()
+            .ForMember(dest => dest.Absences, opt => opt.Ignore());
 
         CreateMap<EmployeeCreate, Employee>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
@@ -30,7 +31,6 @@ public class DtoEntityMapperProfile : Profile
             .ForMember(dest => dest.Manager, opt => opt.Ignore());
         CreateMap<Employee, EmployeeDetails>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
-            //.ForMember(dest => dest.Absences, opt => opt.Ignore())
             .ForMember(dest => dest.Manager, opt => opt.Ignore());
         CreateMap<Employee, EmployeeList>();
 
