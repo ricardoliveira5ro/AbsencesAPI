@@ -1,6 +1,8 @@
-﻿using AbsencesAPI.Business.Validation.Absence;
+﻿using AbsencesAPI.Business.Exceptions;
+using AbsencesAPI.Business.Validation.Absence;
 using AbsencesAPI.Common.DTOS.Absence;
 using AbsencesAPI.Common.DTOS.Employee;
+using AbsencesAPI.Common.DTOS.Management;
 using AbsencesAPI.Common.DTOS.Stats;
 using AbsencesAPI.Common.Interfaces;
 using AbsencesAPI.Common.Model;
@@ -57,6 +59,13 @@ public class AbsenceService : IAbsenceService
     public async Task DeleteAbsenceAsync(AbsenceDelete absenceDelete)
     {
         var entity = await AbsenceRepository.GetByIdAsync(absenceDelete.Id);
+
+        if (entity == null)
+            throw new NotFoundException(absenceDelete.Id, "Absence");
+
+        if (entity.Employees.Count > 0)
+            throw new DependentEntitiesException(entity.Employees.Select(a => a.Id).ToList(), "Employees");
+
         AbsenceRepository.Delete(entity);
         await AbsenceRepository.SaveChangesAsync();
     }
