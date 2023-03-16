@@ -38,6 +38,23 @@ public class ExceptionMiddleware
             var problemDetailsJson = JsonSerializer.Serialize(problemDetails);
             await context.Response.WriteAsync(problemDetailsJson);
         }
+        catch (MissingEntitiesException ex)
+        {
+            context.Response.ContentType = "application/problem+json";
+            context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+            var problemDetails = new ProblemDetails()
+            {
+                Status = StatusCodes.Status400BadRequest,
+                Detail = string.Empty,
+                Instance = "",
+                Title = $"Missing {ex.Type} for ids {JsonSerializer.Serialize(ex.Ids)} not found",
+                Type = "Error"
+            };
+
+            var problemDetailsJson = JsonSerializer.Serialize(problemDetails);
+            await context.Response.WriteAsync(problemDetailsJson);
+        }
         catch (DependentEntitiesException ex)
         {
             context.Response.ContentType = "application/problem+json";

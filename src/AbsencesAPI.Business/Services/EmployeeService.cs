@@ -1,4 +1,6 @@
-﻿using AbsencesAPI.Business.Validation.Employee;
+﻿using AbsencesAPI.Business.Exceptions;
+using AbsencesAPI.Business.Validation.Employee;
+using AbsencesAPI.Common.DTOS.Absence;
 using AbsencesAPI.Common.DTOS.Employee;
 using AbsencesAPI.Common.DTOS.Stats;
 using AbsencesAPI.Common.Interfaces;
@@ -34,6 +36,8 @@ public class EmployeeService : IEmployeeService
         await CreateValidator.ValidateAndThrowAsync(employeeCreate);
 
         var manager = await ManagementRepository.GetByIdAsync(employeeCreate.ManagerId);
+        if (manager == null)
+            throw new NotFoundException(employeeCreate.ManagerId, "Management");
 
         var entity = Mapper.Map<Employee>(employeeCreate);
         entity.Manager = manager;
@@ -47,6 +51,9 @@ public class EmployeeService : IEmployeeService
     public async Task DeleteEmployeeAsync(EmployeeDelete employeeDelete)
     {
         var entity = await EmployeeRepository.GetByIdAsync(employeeDelete.Id);
+        if (entity == null)
+            throw new NotFoundException(employeeDelete.Id, "Employee");
+
         EmployeeRepository.Delete(entity);
         await EmployeeRepository.SaveChangesAsync();
     }
@@ -55,6 +62,9 @@ public class EmployeeService : IEmployeeService
     {
                                                                //includes
         var entity = await EmployeeRepository.GetByIdAsync(id, (employee) => employee.Manager, (employee) => employee.Absences);
+        if (entity == null)
+            throw new NotFoundException(id, "Employee");
+
         return Mapper.Map<EmployeeDetails>(entity);
     }
 
@@ -88,6 +98,12 @@ public class EmployeeService : IEmployeeService
         await UpdateValidator.ValidateAndThrowAsync(employeeUpdate);
 
         var manager = await ManagementRepository.GetByIdAsync(employeeUpdate.ManagerId);
+        if (manager == null)
+            throw new NotFoundException(employeeUpdate.ManagerId, "Management");
+
+        var existingEntity = await EmployeeRepository.GetByIdAsync(employeeUpdate.Id);
+        if (existingEntity == null)
+            throw new NotFoundException(employeeUpdate.Id, "Employee");
 
         var entity = Mapper.Map<Employee>(employeeUpdate);
         entity.Manager = manager;
