@@ -44,7 +44,13 @@ public class AbsenceService : IAbsenceService
         Expression<Func<Employee, bool>> employeeFilter = (employee) => absenceCreate.Employees.Contains(employee.Id);
         var employees = await EmployeeRepository.GetFilteredAsync(new[] {employeeFilter}, null, null);
 
+        var missingEmployees = absenceCreate.Employees.Where((id) => !employees.Any(existing => existing.Id == id));
+        if (missingEmployees.Any())
+            throw new MissingEntitiesException(missingEmployees.ToList(), "Employees");
+
         var statistic = await StatsRepository.GetByIdAsync(absenceCreate.StatsId);
+        if (statistic == null)
+            throw new NotFoundException(absenceCreate.StatsId, "Statistic");
 
         var entity = Mapper.Map<Absence>(absenceCreate);
         entity.Employees = employees;
@@ -59,12 +65,9 @@ public class AbsenceService : IAbsenceService
     public async Task DeleteAbsenceAsync(AbsenceDelete absenceDelete)
     {
         var entity = await AbsenceRepository.GetByIdAsync(absenceDelete.Id);
-
+        
         if (entity == null)
             throw new NotFoundException(absenceDelete.Id, "Absence");
-
-        if (entity.Employees.Count > 0)
-            throw new DependentEntitiesException(entity.Employees.Select(a => a.Id).ToList(), "Employees");
 
         AbsenceRepository.Delete(entity);
         await AbsenceRepository.SaveChangesAsync();
@@ -73,6 +76,9 @@ public class AbsenceService : IAbsenceService
     public async Task<AbsenceGet> GetAbsenceByIdAsync(int id)
     {
         var entity = await AbsenceRepository.GetByIdAsync(id, (absence) => absence.Employees);
+
+        if (entity == null)
+            throw new NotFoundException(id, "Absence");
 
         return Mapper.Map<AbsenceGet>(entity);
     }
@@ -90,8 +96,15 @@ public class AbsenceService : IAbsenceService
 
         Expression<Func<Employee, bool>> employeeFilter = (employee) => absenceUpdate.Employees.Contains(employee.Id);
         var employees = await EmployeeRepository.GetFilteredAsync(new[] { employeeFilter }, null, null);
-        
+
+        var missingEmployees = absenceUpdate.Employees.Where((id) => !employees.Any(existing => existing.Id == id));
+        if (missingEmployees.Any())
+            throw new MissingEntitiesException(missingEmployees.ToList(), "Employees");
+
         var existingEntity = await AbsenceRepository.GetByIdAsync(absenceUpdate.Id, (absence) => absence.Employees);
+        if (existingEntity == null)
+            throw new NotFoundException(absenceUpdate.Id, "Absence");
+
         Mapper.Map(absenceUpdate, existingEntity);
         existingEntity.Employees = employees;
 
