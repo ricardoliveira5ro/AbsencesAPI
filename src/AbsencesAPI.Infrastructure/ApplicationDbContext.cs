@@ -19,7 +19,8 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser, IdentityRole
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlite("Filename=Absences.db");
+        optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=AbsencesDB;Trusted_Connection=True;");
+        //optionsBuilder.UseSqlite("Filename=Absences.db");
         base.OnConfiguring(optionsBuilder);
     }
 
