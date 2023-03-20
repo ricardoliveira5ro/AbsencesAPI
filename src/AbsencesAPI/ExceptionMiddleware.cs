@@ -28,7 +28,7 @@ public class ExceptionMiddleware
 
             var problemDetails = new ProblemDetails()
             {
-                Status = StatusCodes.Status400BadRequest,
+                Status = StatusCodes.Status404NotFound,
                 Detail = string.Empty,
                 Instance = "",
                 Title = $"{ex.Type} for id {ex.Id} not found",
